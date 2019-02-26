@@ -1,1 +1,78 @@
-Hello World
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <style>
+            body {
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-evenly;
+                overflow: hidden;
+            }
+            #clock {
+                font-family: monospace;
+            }
+            #versions {
+                font-family: monospace;
+            }
+            svg {
+                width: 100vw;
+                height: 100vh;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="versions"></div>
+        <script>
+
+            function showVersion() {
+                var url = new URL(window.location.href);
+                var team = url.searchParams.get("team").toUpperCase();
+                var env = url.searchParams.get("env").toLowerCase();
+
+                fetch(`http://inventogory.leboncoin.lan:8080/services?team=${team}&environment=${env}`).then(response => {
+                    return response.json();
+                  }).then(data => {
+
+                    // Map data
+                    var versions = data.map(obj => {
+                        var rObj = {};
+                        rObj[obj.name] = obj.versions[0].version
+                        return rObj;
+                    })
+                    
+                    var versionsDiv =  document.createElement("div"); 
+
+                    // Build data to display
+                    var arr = []
+                    versions.forEach( i => {
+                        arr.push(JSON.stringify(i).replace(/\{|\"|\}/g, "").replace(":", ": "))
+                        return arr
+                    });
+
+                    sortArr = arr.sort()
+
+                    var html = "<table>";
+                    for (var i = 0; i < sortArr.length; i++) {
+                        html+="<tr>";
+                        html+="<td>"+sortArr[i]+"</td>";
+                        
+                        html+="</tr>";
+                
+                    }
+                    html+="</table>";
+
+                    document.getElementById("versions").innerHTML = html
+                  }).catch(err => {
+                    console.log(err)
+                  });
+            }
+            showVersion();
+
+
+            setInterval(showVersion, 100000)
+
+        </script>
+    </body>
+</html>
