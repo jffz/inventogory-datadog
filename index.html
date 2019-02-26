@@ -14,38 +14,64 @@
                 font-family: monospace;
             }
             #versions {
+                /*background-image: url('https://gildas.ch/team-payment.jpg');*/
+                background-position: center; /* Center the image */
+                background-repeat: no-repeat; /* Do not repeat the image */
+                background-size: cover;
                 font-family: monospace;
-            }
-            svg {
-                width: 100vw;
                 height: 100vh;
             }
             .container {
-                width: 100%;
+                width: 100vw;
                 height: 100vh;
             }
             .fulltext {
-                background-color: white;
+                /*background-color: white;*/
                 border-radius: 10px;
                 text-align: center;
                 text-decoration: bold;
-                color: black;
-
+                color: white;
+                text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+/*
                 height: 10vh;
                 font-size: 10vh;
                 line-height: 10vh;
+*/
             }
         </style>
     </head>
     <body>
-        <div id="versions" style="height: 100%;" class="container"></div>
+        <!--<div id="params"></div>-->
+        <div id="versions" class="container"></div>
         <script>
+            var url = new URL(window.location.href);
+            var team = url.searchParams.get("team").toUpperCase();
+            var env = url.searchParams.get("env").toLowerCase();
+            var bg_img = url.searchParams.get("bg");
+
+            //console.log(bg_img)
+            //document.getElementById("params").textContent=bg_img
+
+            if (bg_img != null) {
+                document.getElementById("versions").style.backgroundImage = `url('${bg_img}')`; 
+            }
+
+            flexFont = function () {
+                var divs = document.getElementsByTagName("td");
+                for(var i = 0; i < divs.length; i++) {
+                    var relFontsize = divs[i].offsetWidth*0.05;
+                    divs[i].style.fontSize = relFontsize+'px';
+                }
+            };
+
+            window.onload = function(event) {
+                flexFont();
+            };
+            window.onresize = function(event) {
+                flexFont();
+            };
 
             function showVersion() {
-                var url = new URL(window.location.href);
-                var team = url.searchParams.get("team").toUpperCase();
-                var env = url.searchParams.get("env").toLowerCase();
-
                 fetch(`http://inventogory.leboncoin.lan:8080/services?team=${team}&environment=${env}`).then(response => {
                     return response.json();
                   }).then(data => {
@@ -57,24 +83,20 @@
                         return rObj;
                     })
                     
-                    var versionsDiv =  document.createElement("div"); 
-
                     // Build data to display
                     var arr = []
                     versions.forEach( i => {
-                        arr.push(JSON.stringify(i).replace(/\{|\"|\}/g, "").replace(":", ": "))
-                        return arr
+                        arr.push(JSON.stringify(i).replace(/\{|\"|\}/g, "").replace(/(?=:)[^\d]+/, ": "))
+                        return arr.sort()
                     });
 
-                    sortArr = arr.sort()
-
+                    // Build html table
+                    var size = 100 / arr.length - 4
                     var html = "<table class='container'>";
-                    for (var i = 0; i < sortArr.length; i++) {
+                    for (var i = 0; i < arr.length; i++) {
                         html+="<tr>";
-                        html+="<td class='fulltext'>"+sortArr[i]+"</td>";
-                        
-                        html+="</tr>";
-                
+                        html+=`<td id='vers' class='fulltext' style='height: ${size}vh; font-size: ${size}vh; line-height: ${size + 1}vh;'>${arr[i]}</td>`;                        
+                        html+="</tr>";                
                     }
                     html+="</table>";
 
@@ -83,9 +105,8 @@
                     console.log(err)
                   });
             }
+
             showVersion();
-
-
             setInterval(showVersion, 100000)
 
         </script>
