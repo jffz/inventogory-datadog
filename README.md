@@ -1,5 +1,7 @@
 Edit Board > IFrame > IFrame URL: `https://jffz.github.io/inventogory-datadog/?url=<inventogory_url>&team=<team>&env=<env>&bg=<img_url>` > Done > Save Changes
 
+![preview on a screenboard](preview.png)
+
 ## Parameters
 
 | Parameter  | Default  | Comments  |
@@ -19,3 +21,4 @@ As the javascript is used to gather content from a http endpoint and display it 
 ### CORS (Cross-Origin Resource Sharing)
 [Chrome](https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi?hl=en)  
 [Firefox](https://addons.mozilla.org/en-US/firefox/addon/cors-everywhere/)
+
