@@ -42,16 +42,10 @@
             var env = url.searchParams.get("env").toLowerCase();
             var inv_url = url.searchParams.get("url").toLowerCase();
             var bg_img = url.searchParams.get("bg");
-            var ssl = url.searchParams.get("ssl") || "";
-            var proto = "https";
 
 
             if (bg_img != null) {
-                document.getElementById("versions").style.backgroundImage = `url('${bg_img}')`; 
-            }           
-            
-            if (ssl.toLowerCase() == "false") {
-                proto = "http"
+                document.getElementById("versions").style.backgroundImage = `url('${bg_img}')`;
             }
 
             flexFont = function () {
@@ -70,7 +64,7 @@
             };
 
             function showVersion() {
-                fetch(`${proto}://${inv_url}/services?team=${team}&environment=${env}`).then(response => {
+                fetch(`https://${inv_url}/services?team=${team}&environment=${env}`).then(response => {
                     return response.json();
                   }).then(data => {
 
@@ -80,7 +74,7 @@
                         rObj[obj.name] = obj.versions[0].version
                         return rObj;
                     })
-                    
+
                     // Build data to display
                     var arr = []
                     versions.forEach( i => {
@@ -93,8 +87,8 @@
                     var html = "<table class='container'>";
                     for (var i = 0; i < arr.length; i++) {
                         html+="<tr>";
-                        html+=`<td id='vers' class='fulltext' style='height: ${size}vh; font-size: ${size}vh; line-height: ${size + 1}vh;'>${arr[i]}</td>`;                        
-                        html+="</tr>";                
+                        html+=`<td id='vers' class='fulltext' style='height: ${size}vh; font-size: ${size}vh; line-height: ${size + 1}vh;'>${arr[i]}</td>`;
+                        html+="</tr>";
                     }
                     html+="</table>";
 
