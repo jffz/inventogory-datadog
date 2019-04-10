@@ -37,16 +37,39 @@
         <!--<div id="params"></div>-->
         <div id="versions" class="container"></div>
         <script>
+
+            function getWantedParams(givenUrl, unwantedParams) {
+                const url = new URL(givenUrl)
+                const params = url.searchParams
+                const wantedParams = []
+
+                params.forEach((value, key) => {
+                    if(!unwantedParams.includes(key)) {
+                        if(key == "team") {  // Fix fields cases
+                            value=value.toUpperCase()
+                        } else if(key != "bg_img") {
+                            value=value.toLowerCase()
+                        }
+                        if(key == 'env') {  // Make old `env` param working
+                            key='environment'
+                        }
+                        wantedParams.push(`${key}=${value}`)
+                    }
+                })
+                return `?${wantedParams.join('&')}`
+            }
+
+            params = getWantedParams(window.location.href, ['url', 'bg'])
+
             var url = new URL(window.location.href);
-            var team = url.searchParams.get("team").toUpperCase();
-            var env = url.searchParams.get("env").toLowerCase();
             var inv_url = url.searchParams.get("url").toLowerCase();
-            var bg_img = url.searchParams.get("bg");
+            var endpoint = `https://${inv_url}/services${params}`;
 
-
+            bg_img = url.searchParams.get("bg");
             if (bg_img != null) {
                 document.getElementById("versions").style.backgroundImage = `url('${bg_img}')`;
             }
+
 
             flexFont = function () {
                 var divs = document.getElementsByTagName("td");
@@ -64,7 +87,7 @@
             };
 
             function showVersion() {
-                fetch(`https://${inv_url}/services?team=${team}&environment=${env}`).then(response => {
+                fetch(endpoint).then(response => {
                     return response.json();
                   }).then(data => {
 
